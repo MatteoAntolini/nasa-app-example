@@ -1,0 +1,50 @@
+# README
+## Nasa App - Matteo Antolini
+
+## TEST
+Per poter testare tutti i blocs, models, usecases
+```sh
+flutter test
+```
+
+## SVILUPPO
+
+Per lanciare l'applicazione è consigliato utilizzare un dispositivo fisico. 
+Lanciare la configurazione "nasa"
+
+Per lanicare l'app su brower:
+```sh
+flutter run -d chrome
+```
+
+## Accesso
+Per accedere all'app si può creare un nuovo account, accedere con google oppure accedere con queste credenziali : 
+email : test@gmail.com
+password : test123456
+
+L'accesso con facebook è integrato, ma non è collegato a nessuna applicazione Facebook.
+
+## Importante
+
+Ho provato a creare un infinite scroll nella sezione apod, ma non mi è stato possibile per un problema con le immagini legato al fatto che il progetto è sviluppato su una versione instabile di Flutter. Ho provato a creare una cache per le immagini utilizzando librerie come cached_network_image e extended_image ma ciò risulta in vari errori. Ho preferito quindi mantenere il widget di default di Flutter Image.network() anche se ogni volta che verrà aggiornata la schermata, gli apod dovranno ricaricarsi. Una cosa molto importante per evitare che ci siano errori riguardo Image.network() è aspettare che tutte le immagini si siano caricate prima di fare altre operazioni.
+
+A differenza degli apod, nella sezione projects, sono riuscito con lo stesso sitema ad avere un infinite scroll.
+
+Su web invece non è possibile caricare immagini al di fuori del proprio dominio.
+Si può aggirare il problema con ```flutter run -d chrome --web-renderer html``` ma risulterebbe in altri problemi legati a bug della versione corrente. 
+
+
+## PRODUZIONE E VARIE SOLUZIONI
+
+Per la versione di produzione creerei un secondo progetto firebase in modo tale da mantenere i due ambienti completamente separati, insieme anche a una chiave api nasa diversa. 
+
+Attualmente scosiglierei di utilizzare flutter web per progetti con queste caratteristiche e di aspettare una versione decisamente più stabile. Un'altra soluzione potrebbe essere separare mobile da web e utilizzare Firebase Storage per le immagini e Firebase Functions per poterle caricare nel bucket, avendo però lo svantaggio di utilizzare ulteriore memoria del server e spazio a disposizione e anche un costo supplementare. 
+
+Per invece mobile sarebbe opportuno utilizzare una versione stabile in modo tale da risolvere il problema delle immagini. 
+
+## Notifiche
+
+Per le notifiche ho utilizzato integromat.com 
+Ho creato uno scenario con un rss listener che ogni giorno prende l'apod e manda una notifica all'applicazione tramite FCM. 
+
+Non avendo un Iphone fisico non ho potuto tesate le notifiche su IOS.
