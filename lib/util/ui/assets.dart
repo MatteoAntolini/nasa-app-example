@@ -1,0 +1,1 @@
+const NASA_LOGO = "assets/nasa_logo.png";
