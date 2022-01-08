@@ -44,6 +44,7 @@ class NasaApp extends StatelessWidget {
                   darkTheme: AppTheme.darkTheme,
                   themeMode: state.themeMode,
                   home: Splash(),
+                  debugShowCheckedModeBanner: false,
                   onGenerateRoute: Routes.seafarer.generator(),
                   navigatorKey: Routes.seafarer.navigatorKey,
                 );

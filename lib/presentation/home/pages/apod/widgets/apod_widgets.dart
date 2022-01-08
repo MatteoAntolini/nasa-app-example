@@ -147,6 +147,6 @@ void showApodCalendarDialog(BuildContext context) async {
       lastDate: now);
 
   if (date != null) {
-    sl<ApodCubit>().fetchApod(DateFormat("yyyy-MM-dd").format(date));
+    context.read<ApodCubit>().fetchApod(DateFormat("yyyy-MM-dd").format(date));
   }
 }

@@ -118,14 +118,6 @@ void init() {
   //     addFavorite: sl(),
   //     removeFavorite: sl()));
 
-  sl.registerSingleton<HomeCubit>(HomeCubit());
-
-  sl.registerSingleton<ApodCubit>(ApodCubit(getApod: sl()));
-
-  sl.registerSingleton(ApodsCubit(getApods: sl()));
-
-  sl.registerSingleton<ProjectsCubit>(ProjectsCubit(getProjects: sl()));
-
   // sl.registerSingleton<NotificationCubit>(NotificationCubit(messaging: sl()));
 
   sl.registerSingleton<ThemeCubit>(ThemeCubit());
