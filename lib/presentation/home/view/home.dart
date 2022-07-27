@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:nasa/application/apod/apod_cubit.dart';
+import 'package:nasa/application/apod/apod_state.dart';
+import 'package:nasa/application/apods/apods_cubit.dart';
 import 'package:nasa/application/auth/auth_bloc.dart';
 import 'package:nasa/application/home/home_cubit.dart';
 import 'package:nasa/application/notification/notification_cubit.dart';
 import 'package:nasa/application/notification/notification_state.dart';
+import 'package:nasa/application/projects/projects_cubit.dart';
 import 'package:nasa/application/theme/theme_cubit.dart';
 import 'package:nasa/domain/apod/entities/apod.dart';
 import 'package:nasa/presentation/home/pages/apod/apod_screen.dart';
@@ -21,89 +25,107 @@ import 'package:nasa/util/ui/ui_constants.dart';
 import '../../../injection_container.dart';
 
 class Home extends StatelessWidget {
+  DateTime end = DateTime.now();
+
+  DateTime start = DateTime.now().subtract(Duration(days: 15));
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider<HomeCubit>(
-          create: (cotext) => sl<HomeCubit>(),
+          create: (cotext) => HomeCubit(),
         ),
-        BlocProvider<ApodCubit>(create: (context) => sl<ApodCubit>()),
+        BlocProvider<ApodCubit>(create: (context) => ApodCubit(getApod: sl())),
+        BlocProvider<ApodsCubit>(
+            create: (context) => ApodsCubit(getApods: sl())
+              ..fetchApods(DateFormat("yyyy-MM-dd").format(start),
+                  DateFormat("yyyy-MM-dd").format(end))),
+        BlocProvider<ProjectsCubit>(
+            create: (context) => ProjectsCubit(getProjects: sl())
+              ..fetchProjects(DateFormat("yyyy-MM-dd").format(start)))
       ],
       child: Builder(
-        builder: (context) => Scaffold(
-          floatingActionButton: Visibility(
-            visible: context.read<HomeCubit>().state.screen is ApodScreen,
-            child: FloatingActionButton(
-              onPressed: () => showApodCalendarDialog(context),
-              backgroundColor: SECONDARY,
-              child: Icon(Icons.search),
+        builder: (context) => BlocListener<ApodCubit, ApodState>(
+          listener: (context, state) {
+            if (state is ApodCompleted) {
+              final apod = state.apod;
+              _toApodInfoScreen(apod);
+            }
+          },
+          child: Scaffold(
+            floatingActionButton: Visibility(
+              visible: context.read<HomeCubit>().state.screen is ApodScreen,
+              child: FloatingActionButton(
+                onPressed: () => showApodCalendarDialog(context),
+                backgroundColor: SECONDARY,
+                child: Icon(Icons.search),
+              ),
             ),
-          ),
-          drawer: Drawer(
-              child: Column(
-            children: [
-              Container(
-                width: double.maxFinite,
-                child: DrawerHeader(
-                  child: Text('NASA APP'),
-                  decoration: BoxDecoration(
-                    color: DARK_MODE ? PRIMARY_LIGHT : PRIMARY,
+            drawer: Drawer(
+                child: Column(
+              children: [
+                Container(
+                  width: double.maxFinite,
+                  child: DrawerHeader(
+                    child: Text('NASA APP'),
+                    decoration: BoxDecoration(
+                      color: DARK_MODE ? PRIMARY_LIGHT : PRIMARY,
+                    ),
                   ),
                 ),
-              ),
-              ListTile(
-                title: Text(Strings.APOD),
-                onTap: () {
-                  context.read<HomeCubit>().setScreen(ApodScreen());
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text(Strings.FAVORITES),
-                onTap: () {
-                  context.read<HomeCubit>().setScreen(FavoritesScreen());
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: Text(Strings.PROJECTS),
-                onTap: () {
-                  context.read<HomeCubit>().setScreen(ProjectsScreen());
-                  Navigator.pop(context);
-                },
-              ),
-              Spacer(),
-              BlocBuilder<ThemeCubit, ThemeState>(
-                  bloc: sl<ThemeCubit>(),
-                  builder: (context, state) =>
-                      ThemeWidget(isLight: state.themeMode == ThemeMode.light)),
-              SizedBox(height: 48),
-              // ListTile(
-              //   title: Text('Logout'),
-              //   onTap: () {
-              //     context.read<AuthBloc>().add(LogOutEvent());
-              //     Navigator.pop(context);
-              //     Routes.seafarer.navigate(NASA_APP_ROUTE);
-              //   },
-              // ),
-            ],
-          )),
-          body: Stack(
-            children: [
-              SafeArea(child: context.watch<HomeCubit>().state.screen),
+                ListTile(
+                  title: Text(Strings.APOD),
+                  onTap: () {
+                    context.read<HomeCubit>().setScreen(ApodScreen());
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: Text(Strings.FAVORITES),
+                  onTap: () {
+                    context.read<HomeCubit>().setScreen(FavoritesScreen());
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: Text(Strings.PROJECTS),
+                  onTap: () {
+                    context.read<HomeCubit>().setScreen(ProjectsScreen());
+                    Navigator.pop(context);
+                  },
+                ),
+                Spacer(),
+                BlocBuilder<ThemeCubit, ThemeState>(
+                    bloc: sl<ThemeCubit>(),
+                    builder: (context, state) => ThemeWidget(
+                        isLight: state.themeMode == ThemeMode.light)),
+                SizedBox(height: 48),
+                // ListTile(
+                //   title: Text('Logout'),
+                //   onTap: () {
+                //     context.read<AuthBloc>().add(LogOutEvent());
+                //     Navigator.pop(context);
+                //     Routes.seafarer.navigate(NASA_APP_ROUTE);
+                //   },
+                // ),
+              ],
+            )),
+            body: Stack(
+              children: [
+                SafeArea(child: context.watch<HomeCubit>().state.screen),
 
-              // BlocBuilder<NotificationCubit, NotificationState>(
-              //   builder: (context, state) {
-              //     if (state is NotificationReceived) {
-              //       final notification = state.notification;
-              //       final date = notification.data!["date"];
-              //       context.read<ApodCubit>().fetchApod(date);
-              //     }
-              //     return Container();
-              //   },
-              // )
-            ],
+                // BlocBuilder<NotificationCubit, NotificationState>(
+                //   builder: (context, state) {
+                //     if (state is NotificationReceived) {
+                //       final notification = state.notification;
+                //       final date = notification.data!["date"];
+                //       context.read<ApodCubit>().fetchApod(date);
+                //     }
+                //     return Container();
+                //   },
+                // )
+              ],
+            ),
           ),
         ),
       ),
