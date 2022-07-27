@@ -135,6 +135,7 @@ class _ApodInfoState extends State<ApodInfo> {
                                       ? Styles.F1HEADING_STYLE
                                       : Styles.HEADING_STYLE))),
                     ),
+                    SizedBox(width: 12),
                     Hero(
                         tag: apod!.date!,
                         child: Material(

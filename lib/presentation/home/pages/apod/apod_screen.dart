@@ -53,141 +53,147 @@ class ApodScreen extends StatelessWidget {
           // }
           //return false;
           // },
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: IconButton(
-                  onPressed: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  icon: Icon(Icons.menu),
-                  iconSize: 36,
-                  color: DARK_MODE ? PRIMARY_LIGHT : PRIMARY,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 8.0),
-                child: RichText(
-                  text: TextSpan(children: [
-                    TextSpan(
-                        text: "${Strings.EXPLORE}\n",
-                        style: DARK_MODE
-                            ? Styles.F1TITLE_STYLE
-                            : Styles.TITLE_STYLE),
-                    TextSpan(
-                        text: Strings.BOUNDARIES,
-                        style: DARK_MODE
-                            ? Styles.F1HEADING_STYLE
-                            : Styles.HEADING_STYLE)
-                  ]),
-                ),
-              ),
-              SizedBox(height: 12),
-              // StreamBuilder(
-              //     stream: context.watch<ApodsCubit>().apodsStream,
-              //     builder: (context, snapshot) {
-              //       if (snapshot.hasData) {
-              //         final apods = snapshot.data;
-              //         return StaggeredGridView.countBuilder(
-              //           shrinkWrap: true,
-              //           crossAxisCount: 4,
-              //           physics: ScrollPhysics(),
-              //           controller: _controller,
-              //           itemCount: apods.length + 1,
-              //           itemBuilder: (BuildContext context, int index) =>
-              //           index >= apods.length ? ApodLoadingWidget() :
-              //               ApodWidget(
-              //             apod: apods[index],
-              //           ),
-              //           staggeredTileBuilder: (int index) =>
-              //               StaggeredTile.fit(2),
-              //           mainAxisSpacing: 8.0,
-              //           crossAxisSpacing: 0.0,
-              //         );
-              //       } else {
-              //         final apods = List.generate(30, (index) => null);
-              //         return StaggeredGridView.countBuilder(
-              //           shrinkWrap: true,
-              //           physics: ScrollPhysics(),
-              //           crossAxisCount: 4,
-              //           itemCount: apods.length,
-              //           itemBuilder: (BuildContext context, int index) =>
-              //               ApodLoadingWidget(),
-              //           staggeredTileBuilder: (int index) =>
-              //               StaggeredTile.fit(2),
-              //           mainAxisSpacing: 8.0,
-              //           crossAxisSpacing: 0.0,
-              //         );
-              //       }
-              //     }),
-              // SizedBox(height: 12),
-              BlocBuilder<ApodsCubit, ApodsState>(builder: (context, state) {
-                if (state is ApodsCompleted) {
-                  final apods = state.apods;
-                  return StaggeredGridView.countBuilder(
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
-                    controller: _controller,
-                    crossAxisCount: 4,
-                    itemCount: apods.length,
-                    itemBuilder: (BuildContext context, int index) =>
-                        ApodWidget(
-                      apod: apods[index],
-                    ),
-                    staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
-                    mainAxisSpacing: 8.0,
-                    crossAxisSpacing: 0.0,
-                  );
-                } else if (state is ApodsLoading) {
-                  final apods = List.generate(15, (index) => null);
-                  return StaggeredGridView.countBuilder(
-                    shrinkWrap: true,
-                    physics: ScrollPhysics(),
-                    crossAxisCount: 4,
-                    itemCount: apods.length,
-                    itemBuilder: (BuildContext context, int index) =>
-                        ApodLoadingWidget(),
-                    staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
-                    mainAxisSpacing: 8.0,
-                    crossAxisSpacing: 0.0,
-                  );
-                } else {
-                  return Container();
-                }
-              }),
-              SizedBox(height: 12),
-              Padding(
-                padding: EdgeInsets.only(left: 100, right: 100),
-                child: MaterialButton(
-                  padding: EdgeInsets.all(8),
-                  color: PRIMARY,
-                  onPressed: () {
-                    end = start.subtract(Duration(days: 1));
-                    start = end.subtract(Duration(days: 30));
-                    if (context.read<ApodsCubit>().state is ApodsCompleted) {
-                      context.read<ApodsCubit>().fetchApods(
-                          DateFormat("yyyy-MM-dd").format(start),
-                          DateFormat("yyyy-MM-dd").format(end));
-                    }
-                  },
-                  child: Text(
-                    Strings.LOAD,
-                    style: Styles.F1H2_STYLE,
+          child: BlocListener<ApodCubit, ApodState>(
+            bloc: sl<ApodCubit>(),
+            listener: (context, state) {
+              if (state is ApodCompleted) {
+                final apod = state.apod;
+                _toApodInfoScreen(apod);
+              } else if (state is ApodLoading) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text("Caricamento...")));
+              } else if (state is ApodError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Immagine non presente")));
+              }
+            },
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    icon: Icon(Icons.menu),
+                    iconSize: 36,
+                    color: DARK_MODE ? PRIMARY_LIGHT : PRIMARY,
                   ),
                 ),
-              ),
-              BlocListener<ApodCubit, ApodState>(
-                  bloc: sl<ApodCubit>(),
-                  listener: (context, state) {
-                    if (state is ApodCompleted) {
-                      final apod = state.apod;
-                      _toApodInfoScreen(apod);
-                    }
-                  },
-                  child: Container())
-            ],
+                Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: RichText(
+                    text: TextSpan(children: [
+                      TextSpan(
+                          text: "${Strings.EXPLORE}\n",
+                          style: DARK_MODE
+                              ? Styles.F1TITLE_STYLE
+                              : Styles.TITLE_STYLE),
+                      TextSpan(
+                          text: Strings.BOUNDARIES,
+                          style: DARK_MODE
+                              ? Styles.F1HEADING_STYLE
+                              : Styles.HEADING_STYLE)
+                    ]),
+                  ),
+                ),
+                SizedBox(height: 12),
+                // StreamBuilder(
+                //     stream: context.watch<ApodsCubit>().apodsStream,
+                //     builder: (context, snapshot) {
+                //       if (snapshot.hasData) {
+                //         final apods = snapshot.data;
+                //         return StaggeredGridView.countBuilder(
+                //           shrinkWrap: true,
+                //           crossAxisCount: 4,
+                //           physics: ScrollPhysics(),
+                //           controller: _controller,
+                //           itemCount: apods.length + 1,
+                //           itemBuilder: (BuildContext context, int index) =>
+                //           index >= apods.length ? ApodLoadingWidget() :
+                //               ApodWidget(
+                //             apod: apods[index],
+                //           ),
+                //           staggeredTileBuilder: (int index) =>
+                //               StaggeredTile.fit(2),
+                //           mainAxisSpacing: 8.0,
+                //           crossAxisSpacing: 0.0,
+                //         );
+                //       } else {
+                //         final apods = List.generate(30, (index) => null);
+                //         return StaggeredGridView.countBuilder(
+                //           shrinkWrap: true,
+                //           physics: ScrollPhysics(),
+                //           crossAxisCount: 4,
+                //           itemCount: apods.length,
+                //           itemBuilder: (BuildContext context, int index) =>
+                //               ApodLoadingWidget(),
+                //           staggeredTileBuilder: (int index) =>
+                //               StaggeredTile.fit(2),
+                //           mainAxisSpacing: 8.0,
+                //           crossAxisSpacing: 0.0,
+                //         );
+                //       }
+                //     }),
+                // SizedBox(height: 12),
+                BlocBuilder<ApodsCubit, ApodsState>(builder: (context, state) {
+                  if (state is ApodsCompleted) {
+                    final apods = state.apods;
+                    return StaggeredGridView.countBuilder(
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      controller: _controller,
+                      crossAxisCount: 4,
+                      itemCount: apods.length,
+                      itemBuilder: (BuildContext context, int index) =>
+                          ApodWidget(
+                        apod: apods[index],
+                      ),
+                      staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+                      mainAxisSpacing: 8.0,
+                      crossAxisSpacing: 0.0,
+                    );
+                  } else if (state is ApodsLoading) {
+                    final apods = List.generate(15, (index) => null);
+                    return StaggeredGridView.countBuilder(
+                      shrinkWrap: true,
+                      physics: ScrollPhysics(),
+                      crossAxisCount: 4,
+                      itemCount: apods.length,
+                      itemBuilder: (BuildContext context, int index) =>
+                          ApodLoadingWidget(),
+                      staggeredTileBuilder: (int index) => StaggeredTile.fit(2),
+                      mainAxisSpacing: 8.0,
+                      crossAxisSpacing: 0.0,
+                    );
+                  } else {
+                    return Container();
+                  }
+                }),
+                SizedBox(height: 12),
+                Center(
+                  child: MaterialButton(
+                    padding: EdgeInsets.all(8),
+                    color: PRIMARY,
+                    onPressed: () {
+                      end = start.subtract(Duration(days: 1));
+                      start = end.subtract(Duration(days: 30));
+                      if (context.read<ApodsCubit>().state is ApodsCompleted) {
+                        context.read<ApodsCubit>().fetchApods(
+                            DateFormat("yyyy-MM-dd").format(start),
+                            DateFormat("yyyy-MM-dd").format(end));
+                      }
+                    },
+                    child: Text(
+                      Strings.LOAD,
+                      style: Styles.F1H2_STYLE,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 24),
+              ],
+            ),
           ),
         ),
       ),

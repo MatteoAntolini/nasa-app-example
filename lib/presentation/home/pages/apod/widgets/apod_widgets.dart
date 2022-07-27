@@ -32,8 +32,8 @@ class ApodWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           GestureDetector(
-            onTap: () => Routes.seafarer
-                .navigate(APOD_INFO_ROUTE, params: {"apod": apod, "image": image}),
+            onTap: () => Routes.seafarer.navigate(APOD_INFO_ROUTE,
+                params: {"apod": apod, "image": image}),
             child: Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
