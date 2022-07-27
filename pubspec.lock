@@ -359,7 +359,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.11"
-<<<<<<< HEAD
   material_color_utilities:
     dependency: transitive
     description:
@@ -367,8 +366,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.4"
-=======
->>>>>>> 0056bf023671770086963dac8957b8b308e76c68
   meta:
     dependency: transitive
     description:
@@ -625,11 +622,7 @@ packages:
       name: test_api
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
     version: "0.4.9"
-=======
-    version: "0.4.3"
->>>>>>> 0056bf023671770086963dac8957b8b308e76c68
   typed_data:
     dependency: transitive
     description:
@@ -650,11 +643,7 @@ packages:
       name: vector_math
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
     version: "2.1.2"
-=======
-    version: "2.1.1"
->>>>>>> 0056bf023671770086963dac8957b8b308e76c68
   watcher:
     dependency: transitive
     description:

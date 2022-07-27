@@ -63,8 +63,8 @@ class ApodScreen extends StatelessWidget {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text("Caricamento...")));
               } else if (state is ApodError) {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text("Immagine non...")));
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Immagine non presente")));
               }
             },
             child: ListView(
@@ -172,8 +172,7 @@ class ApodScreen extends StatelessWidget {
                   }
                 }),
                 SizedBox(height: 12),
-                Padding(
-                  padding: EdgeInsets.only(left: 100, right: 100),
+                Center(
                   child: MaterialButton(
                     padding: EdgeInsets.all(8),
                     color: PRIMARY,
@@ -192,6 +191,7 @@ class ApodScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizedBox(height: 24),
               ],
             ),
           ),
